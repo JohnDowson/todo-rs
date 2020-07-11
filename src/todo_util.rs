@@ -1,48 +1,38 @@
 use druid::{Data, Lens};
-use serde::{Deserialize, Serialize};
-#[derive(Clone, Data, Serialize, Deserialize, Lens, Debug)]
+use nanoserde::{DeJson, SerJson};
+#[derive(Clone, Data, Lens, Debug, DeJson, SerJson)]
 pub struct TodoItem {
     pub desc: String,
-    pub state: TodoState,
-    pub to_be_removed: bool,
+    /* Magic strings instead of enums,
+    because nanoserde doesn't support serializing enums yet
+    TODO: possibly can be worked around using string as poxy?*/
+    pub state: String,
 }
 impl TodoItem {
     pub fn new(desc: String) -> TodoItem {
         TodoItem {
             desc,
-            state: TodoState::Pending,
-            to_be_removed: false,
+            state: "PENDING".to_owned(),
         }
     }
 }
 
-#[derive(Clone, Data, PartialEq, Serialize, Deserialize, Debug)]
-pub enum TodoState {
-    Pending,
-    Started,
-    Done,
-}
-
-pub fn load_or_new() -> Vec<TodoItem> {
-    match std::fs::File::open("./todo.json") {
-        Ok(f) => match serde_json::from_reader(f) {
+pub fn load_or_new(path: &str) -> Vec<TodoItem> {
+    match std::fs::read_to_string(path) {
+        Ok(f) => match Vec::<TodoItem>::deserialize_json(&f) {
             Ok(todo) => todo,
             Err(_) => Vec::<TodoItem>::new(),
         },
         Err(_) => Vec::<TodoItem>::new(),
     }
 }
-pub fn save_todo(todo: &Vec<TodoItem>, path: String) -> Result<(), String> {
+pub fn save_todo(todo: &Vec<TodoItem>, path: &str) -> Result<(), String> {
     println!("Saving to {}", path);
     use std::fs;
-    match serde_json::to_string(todo) {
-        Ok(s) => {
-            println!("Saving {}", s);
-            match fs::write(path, s) {
-                Ok(_) => Ok(()),
-                Err(e) => Err(e.to_string()),
-            }
-        }
+    let s = Vec::<TodoItem>::serialize_json(todo);
+    println!("Saving {}", s);
+    match fs::write(path, s) {
+        Ok(_) => Ok(()),
         Err(e) => Err(e.to_string()),
     }
 }

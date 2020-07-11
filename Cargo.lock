@@ -726,6 +726,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "nanoserde"
+version = "0.1.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "51d43fe1ec7bc65107a8cdabac6320d931811ab606f1622fe2bae7f3922552b3"
+dependencies = [
+ "nanoserde-derive",
+]
+
+[[package]]
+name = "nanoserde-derive"
+version = "0.1.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "90a099fda57cb4cf8b28509d194dd7f621ec9c08a990918fc3fd266a2385dd47"
+
+[[package]]
 name = "num"
 version = "0.1.42"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1087,9 +1102,6 @@ name = "serde"
 version = "1.0.114"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5317f7588f0a5078ee60ef675ef96735a1442132dc645eb1d12c018620ed8cd3"
-dependencies = [
- "serde_derive",
-]
 
 [[package]]
 name = "serde_derive"
@@ -1266,8 +1278,7 @@ name = "todo-rs"
 version = "0.1.0"
 dependencies = [
  "druid",
- "serde",
- "serde_json",
+ "nanoserde",
 ]
 
 [[package]]
